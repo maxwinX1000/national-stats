@@ -6,7 +6,9 @@
 
 An original national statistics site for Indonesia: population, economy, work, prices, health and education in one place. Every figure names its source and year (BPS — Statistics Indonesia, World Bank World Development Indicators, CIA World Factbook).
 
-The site is plain static files under `app/` — no build step, no network requests, works on desktop and on a phone. Charts are hand-drawn SVG built from the data in `app/data.js`; there is no charting library.
+Round 2 adds: all 38 provinces (BPS mid-2024 estimates) with a tile-grid cartogram, decade series 2014–2024 for GDP, population, poverty and HDI, a Compare page (any two provinces, any two years), unemployment and inflation series, and CSV downloads of the economy and province tables.
+
+The site is plain static files under `app/` — no build step, no network requests, works on desktop and on a phone. Charts are hand-drawn SVG built from the data in `app/data.js`; there is no charting library. State (tabs, sorts, selections, comparisons) is saved in localStorage so a reload picks up where you left off.
 
 ## Run it
 
@@ -29,10 +31,10 @@ This copies `app/` and `screenshots/` to `out/` and writes `out/dossier.json` wi
 ## Layout
 
 - `app/index.html` — page shell: header, nav, mount point, footer
-- `app/main.js` — hash router and control wiring
-- `app/views.js` — one render function per page
-- `app/charts.js` — hand-rolled SVG charts (line, bar, horizontal bar, donut)
-- `app/data.js` — every figure, with source and year
+- `app/main.js` — hash router, control wiring, CSV downloads, localStorage state
+- `app/views.js` — one render function per page, including Compare
+- `app/charts.js` — hand-rolled SVG charts (line, bar, horizontal bar, donut, comparison bars, tile-grid cartogram)
+- `app/data.js` — every figure, with source and year; all 38 provinces
 - `app/style.css` — the design
 - `screenshots/` — 3–4 renders of the site in a browser
 - `vendor/makefun-frontend.ts` — the kit's dossier library, unchanged
