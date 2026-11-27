@@ -31,7 +31,10 @@ function svgOpen(w, h, label) {
 }
 
 // Line chart: dots, a soft area fill, and a value printed at each dot.
-export function lineChart({ width = 640, height = 260, points, format, color = TEAL }) {
+// `labelIndices` narrows the printed values to the given point indices
+// (e.g. first, last and the 2020 dip on a short home-page strip); by
+// default every point is labelled, as before.
+export function lineChart({ width = 640, height = 260, points, format, color = TEAL, labelIndices = null }) {
   const left = 52;
   const right = 14;
   const top = 18;
@@ -56,7 +59,13 @@ export function lineChart({ width = 640, height = 260, points, format, color = T
   points.forEach((p, i) => {
     const isLast = i === points.length - 1;
     marks += `<circle cx="${px(i)}" cy="${py(p.value)}" r="4" fill="${color}" stroke="#fff" stroke-width="2"/>`;
-    marks += `<text x="${isLast ? px(i) + 2 : px(i)}" y="${py(p.value) - 10}" text-anchor="${isLast ? 'end' : 'middle'}" font-size="11" font-weight="700" fill="${INK}">${escText(format(p.value))}</text>`;
+    if (labelIndices === null || labelIndices.includes(i)) {
+      // First point: left-align the label so it cannot collide with the
+      // y-axis gridline labels; last point: right-align it.
+      const anchor = isLast ? 'end' : i === 0 ? 'start' : 'middle';
+      const lx = isLast ? px(i) + 2 : i === 0 ? px(i) + 2 : px(i);
+      marks += `<text x="${lx}" y="${py(p.value) - 10}" text-anchor="${anchor}" font-size="11" font-weight="700" fill="${INK}">${escText(format(p.value))}</text>`;
+    }
     marks += `<text x="${px(i)}" y="${height - 8}" text-anchor="middle" font-size="11" fill="${SOFT}">${escText(p.label)}</text>`;
   });
   return `${svgOpen(width, height, 'Line chart')}<path d="${fill}" fill="${color}" opacity="0.08"/><path d="${trace}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>${grid}${marks}</svg>`;
@@ -130,10 +139,9 @@ export function donut({ size = 220, segments, centre }) {
 // `rows` is [{ label, a, b, format }] and the two colours are A and B.
 // Each row is scaled to its own larger value, so a row like density —
 // where one province can be a thousand times the other — still reads.
-export function versusChart({ width = 640, rows, format, aColor = TEAL, bColor = AMBER }) {
-  const rowH = 52;
+export function versusChart({ width = 640, rows, format, aColor = TEAL, bColor = AMBER, rowH = 52 }) {
   const height = rows.length * rowH + 34;
-  const left = 150;
+  const left = 170;
   const right = 74;
   const innerW = width - left - right;
   const barH = 13;
@@ -154,29 +162,48 @@ export function versusChart({ width = 640, rows, format, aColor = TEAL, bColor =
 }
 
 // Tile-grid cartogram: one equal tile per province, placed roughly where
-// the province sits in the country, shaded by its share of the national
-// population. Tiles are buttons — clicking one selects that province.
-export function tileGrid({ tiles, selected, cols = 14, rows = 6, tileW = 58, tileH = 46, gap = 5 }) {
+// the province sits in the country, shaded by the selected metric.
+// `shade` is 'share' (population share, pale paper → deep teal),
+// 'hdi' (Human Development Index, pale → deep teal, low → high) or
+// 'poverty' (poverty rate, pale → deep red, low → high). The second line
+// inside each tile shows the active metric's value. Tiles are buttons —
+// clicking one selects that province.
+export function tileGrid({ tiles, selected, cols = 14, rows = 6, tileW = 64, tileH = 48, gap = 5, shade = 'share' }) {
   const width = cols * (tileW + gap) + gap;
   const height = rows * (tileH + gap) + gap;
-  const maxShare = Math.max(...tiles.map((t) => t.share));
+  const metric = (t) => (shade === 'hdi' ? t.hdi : shade === 'poverty' ? t.poverty : t.share);
+  const values = tiles.map(metric);
+  const minV = Math.min(...values);
+  const maxV = Math.max(...values);
+  const fmtMetric = (t) => (shade === 'hdi' ? t.hdi.toFixed(2) : shade === 'poverty' ? `${t.poverty.toFixed(1)}%` : `${t.share.toFixed(1)}%`);
+  const metricName = shade === 'hdi' ? 'HDI 2024' : shade === 'poverty' ? 'poverty rate, Sep 2024' : 'share of Indonesia';
   let cells = '';
   tiles.forEach((t) => {
     const x = gap + t.gx * (tileW + gap);
     const y = gap + t.gy * (tileH + gap);
-    // Shade from pale paper to deep teal as the share grows.
-    const depth = Math.sqrt(t.share / maxShare);
-    const r = Math.round(232 - depth * (232 - 14));
-    const g = Math.round(226 - depth * (226 - 79));
-    const b = Math.round(210 - depth * (210 - 92));
-    const fill = `rgb(${r},${g},${b})`;
+    // Depth 0..1 across the metric's range; shade pale → deep.
+    const depth = maxV === minV ? 0.5 : (metric(t) - minV) / (maxV - minV);
+    let fill;
+    if (shade === 'poverty') {
+      // Pale paper → deep red as poverty rises.
+      const r = Math.round(238 - depth * (238 - 179));
+      const g = Math.round(231 - depth * (231 - 64));
+      const b = Math.round(214 - depth * (214 - 46));
+      fill = `rgb(${r},${g},${b})`;
+    } else {
+      // Pale paper → deep teal as the value rises.
+      const r = Math.round(232 - depth * (232 - 14));
+      const g = Math.round(226 - depth * (226 - 79));
+      const b = Math.round(210 - depth * (210 - 92));
+      fill = `rgb(${r},${g},${b})`;
+    }
     const isSel = selected === t.name;
     const textFill = depth > 0.55 ? '#ffffff' : INK;
     cells += `<g data-prov="${escText(t.name)}" style="cursor:pointer">`;
     cells += `<rect x="${x}" y="${y}" width="${tileW}" height="${tileH}" rx="6" fill="${fill}" stroke="${isSel ? AMBER : '#ffffff'}" stroke-width="${isSel ? 3 : 1}"/>`;
-    cells += `<text x="${x + tileW / 2}" y="${y + 19}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${textFill}">${escText(t.short)}</text>`;
-    cells += `<text x="${x + tileW / 2}" y="${y + 34}" text-anchor="middle" font-size="10" fill="${textFill}">${t.share.toFixed(1)}%</text>`;
-    cells += `<title>${escText(t.name)} — ${t.share.toFixed(1)}% of Indonesia</title></g>`;
+    cells += `<text x="${x + tileW / 2}" y="${y + 21}" text-anchor="middle" font-size="12" font-weight="700" fill="${textFill}">${escText(t.short)}</text>`;
+    cells += `<text x="${x + tileW / 2}" y="${y + 38}" text-anchor="middle" font-size="11" fill="${textFill}">${fmtMetric(t)}</text>`;
+    cells += `<title>${escText(t.name)} — ${fmtMetric(t)} (${metricName})</title></g>`;
   });
   return `${svgOpen(width, height, 'Tile-grid cartogram of Indonesia')}${cells}</svg>`;
 }

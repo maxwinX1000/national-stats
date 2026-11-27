@@ -18,9 +18,10 @@ const defaults = {
   provQuery: '',
   provSort: 'pop',
   provDir: 'desc',
-  provSel: null,
-  cmpA: 'Jawa Barat',
-  cmpB: 'Jawa Timur',
+  provSel: 'Jawa Barat',
+  provShade: 'hdi',
+  cmpA: 'DKI Jakarta',
+  cmpB: 'Papua',
   cmpYearA: 2014,
   cmpYearB: 2024,
 };
@@ -95,7 +96,7 @@ function csvFor(kind) {
   if (kind === 'provinces') {
     const total = PROVINCES.reduce((s, p) => s + p.pop, 0);
     return toCsv(
-      ['Province', 'Capital', 'Island', 'Population (millions)', 'Area (km2)', 'Density (per km2)', 'Share of Indonesia (%)'],
+      ['Province', 'Capital', 'Island', 'Population (millions)', 'Area (km2)', 'Density (per km2)', 'Share of Indonesia (%)', 'HDI 2024 (BPS)', 'Poverty rate Sep 2024 (%) (BPS)'],
       PROVINCES.map((p) => [
         p.name,
         p.capital,
@@ -104,6 +105,8 @@ function csvFor(kind) {
         p.area,
         Math.round((p.pop * 1e6) / p.area),
         ((p.pop / total) * 100).toFixed(1),
+        p.hdi,
+        p.poverty,
       ]),
     );
   }
@@ -139,6 +142,19 @@ app.addEventListener('click', (ev) => {
       state.provSort = key;
       state.provDir = key === 'name' ? 'asc' : 'desc';
     }
+    render();
+    return;
+  }
+  const shade = ev.target.closest('[data-shade]');
+  if (shade) {
+    state.provShade = shade.getAttribute('data-shade');
+    render();
+    return;
+  }
+  const compareProv = ev.target.closest('[data-compare-prov]');
+  if (compareProv) {
+    state.cmpA = compareProv.getAttribute('data-compare-prov');
+    window.location.hash = '#/compare';
     render();
     return;
   }
@@ -184,4 +200,22 @@ app.addEventListener('input', (ev) => {
 });
 
 window.addEventListener('hashchange', render);
+
+// Mobile nav: the toggle button opens and closes the link list, so the
+// header stays one line on a phone. Picking a link closes it again.
+const navToggle = document.getElementById('nav-toggle');
+const topIn = document.querySelector('.top-in');
+if (navToggle && topIn) {
+  navToggle.addEventListener('click', () => {
+    const open = topIn.classList.toggle('nav-open');
+    navToggle.setAttribute('aria-expanded', String(open));
+  });
+  nav.addEventListener('click', (ev) => {
+    if (ev.target.closest('a')) {
+      topIn.classList.remove('nav-open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
 render();

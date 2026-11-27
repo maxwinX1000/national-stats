@@ -65,9 +65,9 @@ export function viewHome() {
   ];
   return `
   <section class="hero">
-    <p class="eyebrow">Indonesia in numbers · Updated ${esc(COUNTRY.updated)}</p>
+    <p class="eyebrow">Indonesia in numbers<span class="eb-tail"> · Updated ${esc(COUNTRY.updated)}</span></p>
     <h1>One country, <em>283.5 million</em> stories — counted.</h1>
-    <p class="lede">Nusantara Data gathers Indonesia's official statistics in one place: population, economy, work, prices, health and education — every figure with its source and year, every chart built from the numbers themselves. Now with all 38 provinces, a decade of data, and a tool to compare any two of them.</p>
+    <p class="lede">Nusantara Data gathers Indonesia's official statistics in one place: population, economy, work, prices, health and education — every figure with its source and year.</p>
     <div class="hero-facts">
       <span><strong>${esc(COUNTRY.provinces)}</strong> provinces</span>
       <span><strong>${esc(COUNTRY.regenciesCities)}</strong> regencies &amp; cities</span>
@@ -76,14 +76,13 @@ export function viewHome() {
     </div>
   </section>
   ${kpiCards()}
+  <section class="card gdp-strip">
+    <h2>GDP, 2014–2024</h2>
+    <p class="card-sub">From $890.8B to $1,396.3B — up every year except the 2020 pandemic dip.</p>
+    ${lineChart({ width: 960, height: 100, points: gdpPoints, format: (v) => `$${Math.round(v)}B`, labelIndices: [0, 6, 10] })}
+    ${srcLine('World Bank — World Development Indicators', 2024)}
+  </section>
   <section class="grid2">
-    <article class="card">
-      <h2>GDP, 2014–2024</h2>
-      <p class="card-sub">Current US$ billions. A decade that holds the 2015 dip, the 2020 pandemic contraction, and growth above 5% since 2022.</p>
-      ${lineChart({ points: gdpPoints, format: (v) => `$${Math.round(v)}B` })}
-      ${srcLine('World Bank — World Development Indicators', 2024)}
-      <p><a class="btn" href="#/economy">Explore the economy →</a></p>
-    </article>
     <article class="card">
       <h2>What makes up GDP</h2>
       <p class="card-sub">Share of GDP by sector of origin, 2024 estimates.</p>
@@ -92,14 +91,15 @@ export function viewHome() {
         <ul class="legend">${SECTORS.map((s) => `<li><span class="sw" style="background:${s.color}"></span>${esc(s.name)} — <strong>${s.share}%</strong></li>`).join('')}</ul>
       </div>
       ${srcLine('CIA World Factbook', '2024 estimates')}
+      <p><a class="btn" href="#/economy">Explore the economy →</a></p>
     </article>
-  </section>
-  <section class="card">
-    <h2>Where people live</h2>
-    <p class="card-sub">Share of the population by island group. More than half of all Indonesians live on Jawa, which is 7% of the land.</p>
-    ${hbarChart({ items: islandShare, format: (v) => `${v}%` })}
-    ${srcLine('BPS — Population Projection 2020–2050', 2023)}
-    <p><a class="btn" href="#/provinces">See all 38 provinces →</a> <a class="btn btn-ghost" href="#/compare">Compare two provinces →</a></p>
+    <article class="card">
+      <h2>Where people live</h2>
+      <p class="card-sub">Share of the population by island group. More than half of all Indonesians live on Jawa, which is 7% of the land.</p>
+      ${hbarChart({ items: islandShare, format: (v) => `${v}%` })}
+      ${srcLine('BPS — Population Projection 2020–2050', 2023)}
+      <p><a class="btn" href="#/provinces">See all 38 provinces →</a> <a class="btn btn-ghost" href="#/compare">Compare two provinces →</a></p>
+    </article>
   </section>`;
 }
 
@@ -223,10 +223,10 @@ export function viewJobs() {
     </article>
   </section>
   <section class="card">
-    <h2>Unemployment, 2019–2024</h2>
-    <p class="card-sub">Open unemployment rate (TPT), BPS labour force survey, August each year. The 2020 spike is the pandemic; every year since has been lower.</p>
+    <h2>Unemployment, 2014–2024</h2>
+    <p class="card-sub">Open unemployment rate (TPT), BPS labour force survey, August each year. A decade that starts at 5.94% and falls almost every year — the 2020 spike is the pandemic.</p>
     ${lineChart({ points: UNEMPLOYMENT_SERIES.map((d) => ({ label: String(d.year), value: d.value })), format: (v) => `${v.toFixed(2)}%`, color: '#b3402e' })}
-    ${srcLine('BPS — Statistics Indonesia, Labour Force Survey (Sakernas)', 'Aug 2019–2024')}
+    ${srcLine('BPS — Statistics Indonesia, Labour Force Survey (Sakernas)', 'Aug 2014–2024')}
     <table class="tbl"><thead><tr><th>Year</th><th>Open unemployment (Aug)</th></tr></thead><tbody>
     ${UNEMPLOYMENT_SERIES.map((d) => `<tr><td>${d.year}</td><td>${d.value.toFixed(2)}%</td></tr>`).join('')}
     </tbody></table>
@@ -252,10 +252,10 @@ export function viewPrices() {
       <p class="card-sub">The latest readings, twice a year: ${POVERTY_SERIES.map((d) => `${esc(d.label)} ${d.value.toFixed(2)}%`).join(' · ')}.</p>
     </article>
     <article class="card">
-      <h2>Inflation, 2019–2024</h2>
-      <p class="card-sub">Consumer prices, December year-on-year. The 2022 jump is the fuel-subsidy adjustment; 2024 is the calmest year since 2020.</p>
+      <h2>Inflation, 2014–2024</h2>
+      <p class="card-sub">Consumer prices, December year-on-year. The 2014 spike (8.36%) is the fuel-subsidy adjustment era; the 2022 jump is the second adjustment; 2024 is the calmest year since 2020.</p>
       ${lineChart({ points: INFLATION_SERIES.map((d) => ({ label: String(d.year), value: d.value })), format: (v) => `${v.toFixed(2)}%`, color: '#e8a13a' })}
-      ${srcLine('BPS — Statistics Indonesia, Consumer Price Index release', 'Dec 2019–2024')}
+      ${srcLine('BPS — Statistics Indonesia, Consumer Price Index release', 'Dec 2014–2024')}
       <table class="tbl"><thead><tr><th>Year</th><th>Inflation (Dec, y-on-y)</th></tr></thead><tbody>
       ${INFLATION_SERIES.map((d) => `<tr><td>${d.year}</td><td>${d.value.toFixed(2)}%</td></tr>`).join('')}
       </tbody></table>
@@ -290,25 +290,50 @@ export function viewProvinces(state) {
   const q = (state.provQuery || '').toLowerCase();
   const sort = state.provSort || 'pop';
   const dir = state.provDir || 'desc';
+  const shade = state.provShade || 'hdi';
   const total = provinceTotal();
   let rows = PROVINCES.map((p) => withStats(p));
   if (q) rows = rows.filter((r) => r.name.toLowerCase().includes(q) || r.capital.toLowerCase().includes(q) || r.island.toLowerCase().includes(q));
   rows.sort((a, b) => {
-    const k = sort === 'name' ? a.name.localeCompare(b.name) : sort === 'density' ? a.density - b.density : sort === 'share' ? a.share - b.share : a.pop - b.pop;
+    const k = sort === 'name' ? a.name.localeCompare(b.name) : sort === 'density' ? a.density - b.density : sort === 'share' ? a.share - b.share : sort === 'hdi' ? a.hdi - b.hdi : sort === 'poverty' ? a.poverty - b.poverty : a.pop - b.pop;
     return dir === 'asc' ? k : -k;
   });
   const sel = state.provSel ? rows.find((r) => r.name === state.provSel) || PROVINCES.find((p) => p.name === state.provSel) : null;
   const selRow = sel ? withStats(sel) : null;
   const arrow = (key) => (sort === key ? (dir === 'asc' ? ' ↑' : ' ↓') : '');
   const tiles = PROVINCES.map((p) => ({ ...withStats(p) }));
+  const shadeCaption = shade === 'hdi'
+    ? 'One tile per province, placed roughly where it sits in the country and shaded by Human Development Index, 2024 (BPS). Darker teal means higher HDI — Jakarta is darkest, Papua Pegunungan palest. Tap any tile to select it.'
+    : shade === 'poverty'
+      ? 'One tile per province, placed roughly where it sits in the country and shaded by poverty rate, September 2024 (BPS). Darker red means more people below the poverty line. Tap any tile to select it.'
+      : 'One tile per province, placed roughly where it sits in the country and shaded by its share of the national population. Darker means more people; tap any tile to select it.';
+  const shadeSrc = shade === 'hdi'
+    ? 'Tile grid: schematic, not a map — every province gets one equal tile. HDI from BPS, Human Development Index release 2024.'
+    : shade === 'poverty'
+      ? 'Tile grid: schematic, not a map — every province gets one equal tile. Poverty from BPS, Poverty Profile September 2024.'
+      : 'Tile grid: schematic, not a map — every province gets one equal tile. Shares from BPS mid-2024 estimates.';
+  // Ranks are derived from the data, never hardcoded per province.
+  const hdiRank = selRow ? [...PROVINCES].sort((a, b) => b.hdi - a.hdi).findIndex((p) => p.name === selRow.name) + 1 : 0;
+  const povRank = selRow ? [...PROVINCES].sort((a, b) => b.poverty - a.poverty).findIndex((p) => p.name === selRow.name) + 1 : 0;
+  const hdiNote = hdiRank === 1 ? 'highest in Indonesia' : hdiRank === 38 ? 'lowest in Indonesia' : `rank ${hdiRank} of 38`;
+  const povNote = povRank === 1 ? 'highest in Indonesia' : povRank === 38 ? 'lowest in Indonesia' : `rank ${povRank} of 38 for poverty`;
+  const topHdi = [...PROVINCES].sort((a, b) => b.hdi - a.hdi).slice(0, 5);
+  const topPov = [...PROVINCES].sort((a, b) => b.poverty - a.poverty).slice(0, 5);
   return `
   <section class="pagehead"><h1>Provinces</h1>
-  <p class="lede">All 38 provinces, ${total.toFixed(1)} million people in total (BPS mid-2024 estimates). Jawa Barat alone holds 50.19 million — more than the 28 smallest provinces combined. Tap a tile or a row for its detail.</p></section>
-  <section class="card">
+  <p class="lede">All 38 provinces, ${total.toFixed(1)} million people in total (BPS mid-2024 estimates). Tap a tile or a row for its detail.</p></section>
+  <section class="card carto-card">
     <h2>Indonesia as tiles</h2>
-    <p class="card-sub">One tile per province, placed roughly where it sits in the country and shaded by its share of the national population. Darker means more people; tap any tile to select it.</p>
-    <div class="cartogram">${tileGrid({ tiles, selected: state.provSel })}</div>
-    <p class="src">Tile grid: schematic, not a map — every province gets one equal tile. Shares from BPS mid-2024 estimates.</p>
+    <p class="card-sub">${esc(shadeCaption)}</p>
+    <div class="seg shade-toggle" role="group" aria-label="Shade cartogram by">
+      <span class="shade-label">Shade by:</span>
+      <button data-shade="share" class="${shade === 'share' ? 'on' : ''}">Population share</button>
+      <button data-shade="hdi" class="${shade === 'hdi' ? 'on' : ''}">HDI</button>
+      <button data-shade="poverty" class="${shade === 'poverty' ? 'on' : ''}">Poverty</button>
+    </div>
+    <div class="cartogram">${tileGrid({ tiles, selected: state.provSel, shade })}</div>
+    ${selRow ? `<p class="detail-strip"><strong>${esc(selRow.name)}</strong> — capital ${esc(selRow.capital)} · <strong>${selRow.pop.toFixed(2)}M</strong> people (${selRow.share.toFixed(1)}%) · <strong>${selRow.density.toLocaleString('en-US')}/km²</strong> · <strong>${selRow.area.toLocaleString('en-US')} km²</strong> · HDI <strong>${selRow.hdi.toFixed(2)}</strong> · poverty <strong>${selRow.poverty.toFixed(2)}%</strong></p>` : '<p class="hint">Tap any tile to see that province here.</p>'}
+    <p class="src">${esc(shadeSrc)}</p>
   </section>
   <section class="card">
     <div class="toolbar">
@@ -323,16 +348,35 @@ export function viewProvinces(state) {
       <th><button data-sort="pop">Population${arrow('pop')}</button></th>
       <th><button data-sort="share">Share${arrow('share')}</button></th>
       <th><button data-sort="density">Density /km²${arrow('density')}</button></th>
+      <th><button data-sort="hdi">HDI 2024${arrow('hdi')}</button></th>
+      <th><button data-sort="poverty">Poverty %${arrow('poverty')}</button></th>
     </tr></thead><tbody>
-    ${rows.map((r) => `<tr data-prov="${esc(r.name)}" class="${selRow && selRow.name === r.name ? 'hl' : ''}"><td>${esc(r.name)}</td><td>${esc(r.capital)}</td><td>${esc(r.island)}</td><td>${r.pop.toFixed(2)}M</td><td>${r.share.toFixed(1)}%</td><td>${r.density.toLocaleString('en-US')}</td></tr>`).join('') || '<tr><td colspan="6">No province matches that search.</td></tr>'}
+    ${rows.map((r) => `<tr data-prov="${esc(r.name)}" class="${selRow && selRow.name === r.name ? 'hl' : ''}"><td>${esc(r.name)}</td><td>${esc(r.capital)}</td><td>${esc(r.island)}</td><td>${r.pop.toFixed(2)}M</td><td>${r.share.toFixed(1)}%</td><td>${r.density.toLocaleString('en-US')}</td><td>${r.hdi.toFixed(2)}</td><td>${r.poverty.toFixed(2)}%</td></tr>`).join('') || '<tr><td colspan="8">No province matches that search.</td></tr>'}
     </tbody></table></div>
-    ${srcLine('BPS — Statistics Indonesia, mid-2024 official estimates', 2024)}
+    ${srcLine('BPS — Statistics Indonesia, mid-2024 official estimates; Human Development Index release 2024; Poverty Profile September 2024', 2024)}
     ${selRow ? `<aside class="detail">
       <h3>${esc(selRow.name)}</h3>
       <p>Capital <strong>${esc(selRow.capital)}</strong> · Island <strong>${esc(selRow.island)}</strong></p>
       <p>Population <strong>${selRow.pop.toFixed(2)} million</strong> — <strong>${selRow.share.toFixed(1)}%</strong> of Indonesia — spread over <strong>${selRow.area.toLocaleString('en-US')} km²</strong> at <strong>${selRow.density.toLocaleString('en-US')} people per km²</strong>.</p>
+      <p>HDI <strong>${selRow.hdi.toFixed(2)}</strong> — ${hdiNote}; national 75.02 (BPS, 2024).</p>
+      <p>Poverty <strong>${selRow.poverty.toFixed(2)}%</strong> — ${selRow.poverty < 8.57 ? 'below' : 'above'} the national 8.57% (${povNote}); BPS, September 2024.</p>
+      <p><button class="btn btn-small" data-compare-prov="${esc(selRow.name)}">Compare ${esc(selRow.name)} →</button></p>
       <p class="src">Source: BPS, mid-2024 estimates. Density computed from population ÷ area.</p>
     </aside>` : '<p class="hint">Tap any tile or row to see that province in detail.</p>'}
+  </section>
+  <section class="grid2">
+    <article class="card">
+      <h2>Highest HDI</h2>
+      <p class="card-sub">Human Development Index, 2024 (BPS). Jakarta leads by a wide margin.</p>
+      ${hbarChart({ items: topHdi.map((p) => ({ label: p.name, value: p.hdi })), format: (v) => v.toFixed(2), color: '#2e7d5b' })}
+      ${srcLine('BPS — Statistics Indonesia, Human Development Index release', 2024)}
+    </article>
+    <article class="card">
+      <h2>Highest poverty</h2>
+      <p class="card-sub">Poverty rate, September 2024 (BPS). The Papua highlands carry the highest rates.</p>
+      ${hbarChart({ items: topPov.map((p) => ({ label: p.name, value: p.poverty })), format: (v) => `${v.toFixed(2)}%`, color: '#b3402e' })}
+      ${srcLine('BPS — Statistics Indonesia, Poverty Profile', 'Sep 2024')}
+    </article>
   </section>`;
 }
 
@@ -351,15 +395,20 @@ function fmtChange(a, b, unit, decimals = 1) {
 }
 
 export function viewCompare(state) {
-  const nameA = state.cmpA || 'Jawa Barat';
-  const nameB = state.cmpB || 'Jawa Timur';
+  const nameA = state.cmpA || 'DKI Jakarta';
+  const nameB = state.cmpB || 'Papua';
   const yearA = state.cmpYearA || 2014;
   const yearB = state.cmpYearB || 2024;
   const provA = withStats(PROVINCES.find((p) => p.name === nameA) || PROVINCES[0]);
   const provB = withStats(PROVINCES.find((p) => p.name === nameB) || PROVINCES[1]);
-  const popRatio = provA.pop >= provB.pop
-    ? `${esc(provA.name)} holds ${(provA.pop / provB.pop).toFixed(1)}× the population of ${esc(provB.name)}`
-    : `${esc(provB.name)} holds ${(provB.pop / provA.pop).toFixed(1)}× the population of ${esc(provA.name)}`;
+  const popBig = provA.pop >= provB.pop ? provA : provB;
+  const popSmall = popBig === provA ? provB : provA;
+  // How much land the more populous province holds, relative to the other.
+  const landRatio = popBig.area / popSmall.area;
+  const landText = landRatio >= 1
+    ? `${Math.round(landRatio)}× the land`
+    : `1/${Math.round(1 / landRatio)}th of the land`;
+  const verdict = `${esc(popBig.name)} holds ${(popBig.pop / popSmall.pop).toFixed(1)}× the population of ${esc(popSmall.name)} on ${landText} — and its HDI is ${popBig.hdi.toFixed(2)} against ${popSmall.hdi.toFixed(2)}, with poverty ${popBig.poverty.toFixed(2)}% against ${popSmall.poverty.toFixed(2)}%.`;
   const gdpA = GDP_SERIES.find((d) => d.year === yearA);
   const gdpB = GDP_SERIES.find((d) => d.year === yearB);
   const popA = POP_SERIES.find((d) => d.year === yearA);
@@ -368,9 +417,13 @@ export function viewCompare(state) {
   const povB = POVERTY_DECADE.find((d) => d.year === yearB);
   const hdiA = HDI_SERIES.find((d) => d.year === yearA);
   const hdiB = HDI_SERIES.find((d) => d.year === yearB);
+  const unA = UNEMPLOYMENT_SERIES.find((d) => d.year === yearA);
+  const unB = UNEMPLOYMENT_SERIES.find((d) => d.year === yearB);
+  const infA = INFLATION_SERIES.find((d) => d.year === yearA);
+  const infB = INFLATION_SERIES.find((d) => d.year === yearB);
   return `
   <section class="pagehead"><h1>Compare</h1>
-  <p class="lede">Two provinces side by side, or two years of the whole country. Pick any pair — the charts and the table update at once.</p></section>
+  <p class="lede">Two provinces side by side, or two years of the whole country.</p></section>
   <section class="card">
     <h2>Province vs province</h2>
     <div class="compare-pickers">
@@ -381,14 +434,19 @@ export function viewCompare(state) {
     <p class="card-sub">${esc(provA.name)} — capital ${esc(provA.capital)}, ${esc(provA.island)}. ${esc(provB.name)} — capital ${esc(provB.capital)}, ${esc(provB.island)}.</p>
     <div class="versus-key"><span><span class="sw" style="background:#0e4f5c"></span>${esc(provA.name)}</span><span><span class="sw" style="background:#e8a13a"></span>${esc(provB.name)}</span></div>
     ${versusChart({
+      width: 800,
+      rowH: 44,
       rows: [
         { label: 'Population', a: provA.pop, b: provB.pop, format: (v) => `${v.toFixed(2)}M` },
         { label: 'Density /km²', a: provA.density, b: provB.density, format: (v) => `${Math.round(v).toLocaleString('en-US')}` },
         { label: 'Area km²', a: provA.area, b: provB.area, format: (v) => `${Math.round(v).toLocaleString('en-US')}` },
         { label: 'Share of Indonesia', a: provA.share, b: provB.share, format: (v) => `${v.toFixed(1)}%` },
+        { label: 'Human Development Index', a: provA.hdi, b: provB.hdi, format: (v) => v.toFixed(2) },
+        { label: 'Poverty rate', a: provA.poverty, b: provB.poverty, format: (v) => `${v.toFixed(2)}%` },
       ],
     })}
-    <p class="note">${popRatio}. ${esc(provA.name)} covers ${provA.area.toLocaleString('en-US')} km² at ${provA.density.toLocaleString('en-US')} people per km²; ${esc(provB.name)} covers ${provB.area.toLocaleString('en-US')} km² at ${provB.density.toLocaleString('en-US')} per km². Sources: BPS mid-2024 estimates; density computed.</p>
+    <p class="note">${verdict}</p>
+    <p class="note">${esc(provA.name)} covers ${provA.area.toLocaleString('en-US')} km² at ${provA.density.toLocaleString('en-US')} people per km²; ${esc(provB.name)} covers ${provB.area.toLocaleString('en-US')} km² at ${provB.density.toLocaleString('en-US')} per km². Sources: BPS mid-2024 estimates; HDI 2024; poverty Sep 2024; density computed.</p>
   </section>
   <section class="card">
     <h2>Year vs year</h2>
@@ -403,8 +461,10 @@ export function viewCompare(state) {
       <tr><td>Population</td><td>${popA.pop.toFixed(1)}M</td><td>${popB.pop.toFixed(1)}M</td><td>${fmtChange(popA.pop, popB.pop, 'M')}</td></tr>
       <tr><td>Poverty rate (March)</td><td>${povA.value.toFixed(2)}%</td><td>${povB.value.toFixed(2)}%</td><td>${fmtChange(povA.value, povB.value, ' pts', 2)}</td></tr>
       <tr><td>Human Development Index</td><td>${hdiA.hdi.toFixed(2)}</td><td>${hdiB.hdi.toFixed(2)}</td><td>${fmtChange(hdiA.hdi, hdiB.hdi, ' pts', 2)}</td></tr>
+      <tr><td>Unemployment (Aug, TPT)</td><td>${unA.value.toFixed(2)}%</td><td>${unB.value.toFixed(2)}%</td><td>${fmtChange(unA.value, unB.value, ' pts', 2)}</td></tr>
+      <tr><td>Inflation (Dec, y-on-y)</td><td>${infA.value.toFixed(2)}%</td><td>${infB.value.toFixed(2)}%</td><td>${fmtChange(infA.value, infB.value, ' pts', 2)}</td></tr>
     </tbody></table>
-    ${srcLine('World Bank — World Development Indicators 2024; BPS Poverty Profile and Human Development Index', '2014–2024')}
+    ${srcLine('World Bank — World Development Indicators 2024; BPS Poverty Profile, Human Development Index, Labour Force Survey and Consumer Price Index', '2014–2024')}
     <p class="note">Between ${yearA} and ${yearB}, GDP moved from $${gdpA.gdp.toLocaleString('en-US')}B to $${gdpB.gdp.toLocaleString('en-US')}B, population from ${popA.pop.toFixed(1)}M to ${popB.pop.toFixed(1)}M, poverty from ${povA.value.toFixed(2)}% to ${povB.value.toFixed(2)}%, and HDI from ${hdiA.hdi.toFixed(2)} to ${hdiB.hdi.toFixed(2)}.</p>
   </section>`;
 }
