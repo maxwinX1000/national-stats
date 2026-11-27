@@ -6,7 +6,7 @@
 
 An original national statistics site for Indonesia: population, economy, work, prices, health and education in one place. Every figure names its source and year (BPS — Statistics Indonesia, World Bank World Development Indicators, CIA World Factbook).
 
-Round 2 adds: all 38 provinces (BPS mid-2024 estimates) with a tile-grid cartogram, decade series 2014–2024 for GDP, population, poverty and HDI, a Compare page (any two provinces, any two years), unemployment and inflation series, and CSV downloads of the economy and province tables.
+Round 3 adds: HDI and poverty rate for every province (BPS 2024 / Sep 2024) with sortable table columns, a shaded cartogram with Population / HDI / Poverty modes, a dramatic Jakarta-vs-Papua Compare default with a computed verdict, a compact GDP strip on the home page, a collapsible menu on phones, and decade series 2014–2024 for unemployment and inflation.
 
 The site is plain static files under `app/` — no build step, no network requests, works on desktop and on a phone. Charts are hand-drawn SVG built from the data in `app/data.js`; there is no charting library. State (tabs, sorts, selections, comparisons) is saved in localStorage so a reload picks up where you left off.
 

@@ -1,12 +1,14 @@
 // Entry program for the Nusantara Data site (Node 22, standard library
-// only). Round 2: all 38 provinces, decade series 2014–2024, a Compare
-// page, a tile-grid cartogram, and CSV downloads. The site itself lives
-// in app/ beside this file as plain static files; screenshots/ holds the
-// renders taken of it. Running this program hands the entry in: it copies
-// app/ and screenshots/ into the output directory and writes dossier.json
-// there, the summary the judge reads, using the vendored make.fun
-// library. That library file must stay exactly as the kit shipped it, or
-// the scorer's own copy will disagree.
+// only). Round 3: per-province HDI and poverty, cartogram shade modes,
+// a dramatic Jakarta-vs-Papua Compare default, a compact GDP strip on
+// the home page, a collapsible phone menu, and decade series 2014–2024
+// for unemployment and inflation. The site itself lives in app/ beside
+// this file as plain static files; screenshots/ holds the renders taken
+// of it. Running this program hands the entry in: it copies app/ and
+// screenshots/ into the output directory and writes dossier.json there,
+// the summary the judge reads, using the vendored make.fun library.
+// That library file must stay exactly as the kit shipped it, or the
+// scorer's own copy will disagree.
 //
 // Outside the grader, MAKEFUN_OUTPUT_DIR stands in for /output:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
@@ -40,5 +42,5 @@ writeFileSync(
   }),
 );
 
-// Round 2 build: confirm what was handed in, for the build log.
-console.log(`dossier written to ${outDir}`);
+// Round 3 build: confirm what was handed in, for the build log.
+console.log(`dossier written to ${outDir} (round 3: 38 provinces with HDI + poverty, shade modes, Jakarta-vs-Papua compare)`);
